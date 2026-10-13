@@ -59,8 +59,8 @@ export const LandingPageView: React.FC = () => {
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7 space-y-6">
             <h1 className="text-3xl sm:text-5xl font-bold text-white font-display tracking-tight leading-[1.12]">
-              Spend less time managing the stadium.{' '}
-              <span className="text-[#84CC16]">Spend more time enjoying the match.</span>
+              Spend less time on stadium hassles,{' '}
+              <span className="text-[#84CC16]">Spend more time enjoying the game.</span>
             </h1>
 
             <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed max-w-xl">
@@ -76,13 +76,6 @@ export const LandingPageView: React.FC = () => {
                 <ScanBarcode className="w-4 h-4" />
                 <span>IPL Ticket Login / Barcode Scan</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => launchFanApp('home')}
-                className="px-5 py-3 bg-[#111827] hover:bg-[#1E293B] text-white border border-[#1E293B] font-semibold text-xs sm:text-sm rounded-xl transition-colors cursor-pointer"
-              >
-                Fan Companion View
               </button>
             </div>
           </div>

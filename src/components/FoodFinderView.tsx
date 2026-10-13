@@ -103,6 +103,25 @@ export const FoodFinderView: React.FC = () => {
   const cartTotalINR = cart.reduce((sum, c) => sum + c.item.priceINR * c.quantity, 0);
   const cartCount = cart.reduce((sum, c) => sum + c.quantity, 0);
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      All: 0,
+      Snack: 0,
+      Meal: 0,
+      Beverage: 0,
+      Dessert: 0,
+    };
+    foodStalls.forEach((stall) => {
+      stall.menu.forEach((item) => {
+        counts.All += 1;
+        if (counts[item.category] !== undefined) {
+          counts[item.category] += 1;
+        }
+      });
+    });
+    return counts;
+  }, [foodStalls]);
+
   const handleCheckout = () => {
     const order = placeSimulatedOrder(fulfillmentType);
     if (order) {
@@ -183,13 +202,22 @@ export const FoodFinderView: React.FC = () => {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
+                  className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                     selectedCategory === cat
                       ? 'bg-[#84CC16] text-[#0B1120] font-semibold'
                       : 'text-[#94A3B8] hover:text-white'
                   }`}
                 >
-                  {cat}
+                  <span>{cat}</span>
+                  <span
+                    className={`text-[10px] px-1 py-0.5 rounded font-mono-tabular leading-none ${
+                      selectedCategory === cat
+                        ? 'bg-[#0B1120]/25 text-[#0B1120] font-bold'
+                        : 'bg-[#1E293B] text-[#94A3B8]'
+                    }`}
+                  >
+                    {categoryCounts[cat] ?? 0}
+                  </span>
                 </button>
               ))}
             </div>
@@ -370,6 +398,10 @@ export const FoodFinderView: React.FC = () => {
                           </div>
                           <p className="text-xs text-[#94A3B8]">{item.description}</p>
                           <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#64748B]">
+                            <span className="px-1.5 py-0.5 rounded bg-[#1E293B] text-[#CBD5E1] text-[10px] font-semibold uppercase tracking-wider">
+                              {item.category}
+                            </span>
+                            <span aria-hidden="true">·</span>
                             <span>{item.dietaryLabels.join(' · ')}</span>
                             <span aria-hidden="true">·</span>
                             <span className="font-mono-tabular">
