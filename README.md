@@ -1,8 +1,8 @@
-# StadiumIQ (FanWay) 🏏🏟️
+# FanWay
 
 > **Spend less time on stadium hassles, Spend more time enjoying the game.**
 
-StadiumIQ is an AI-powered match-day companion designed for cricket fans attending TATA Indian Premier League (IPL) matches. It bridges the gap between ticketing, venue navigation, and concourse services, eliminating stadium friction and reducing wait times so spectators can focus on the match.
+FanWay is an AI-powered match-day companion designed for cricket fans attending TATA Indian Premier League (IPL) matches. It bridges the gap between ticketing, venue navigation, and concourse services, eliminating stadium friction and reducing wait times so spectators can focus on the match.
 
 ---
 
