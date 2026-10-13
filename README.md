@@ -1,4 +1,4 @@
-# FanWay
+# FanWay(Demo Project)
 
 > **Spend less time on stadium hassles, Spend more time enjoying the game.**
 
