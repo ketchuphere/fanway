@@ -1,0 +1,6 @@
+{
+  "name": "StadiumIQ",
+  "description": "AI-powered stadium companion and venue operations platform for live sporting events.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
