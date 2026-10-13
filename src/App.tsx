@@ -12,18 +12,12 @@ import { TicketAuthView } from './components/TicketAuthView';
 import { FanHomeView } from './components/FanHomeView';
 import { StadiumMapView } from './components/StadiumMapView';
 import { FoodFinderView } from './components/FoodFinderView';
-import { AIConciergeView } from './components/AIConciergeView';
 import { MatchCenterView } from './components/MatchCenterView';
 import { HelpSafetyView } from './components/HelpSafetyView';
 import { FanActivityView } from './components/FanActivityView';
-import { OperatorDashboardView } from './components/OperatorDashboardView';
 
 const MainRouter: React.FC = () => {
-  const { role, fanTab } = useStadium();
-
-  if (role === 'operator' || role === 'admin') {
-    return <OperatorDashboardView />;
-  }
+  const { fanTab } = useStadium();
 
   switch (fanTab) {
     case 'home':
@@ -32,8 +26,6 @@ const MainRouter: React.FC = () => {
       return <StadiumMapView />;
     case 'food':
       return <FoodFinderView />;
-    case 'concierge':
-      return <AIConciergeView />;
     case 'match':
       return <MatchCenterView />;
     case 'safety':

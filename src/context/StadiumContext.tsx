@@ -219,11 +219,6 @@ export const StadiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const setRole = (newRole: UserRole) => {
     setRoleState(newRole);
-    if (newRole === 'admin') {
-      setOperatorTab('settings');
-    } else if (newRole === 'operator' && operatorTab === 'settings') {
-      setOperatorTab('overview');
-    }
   };
 
   const activeEvent = useMemo(

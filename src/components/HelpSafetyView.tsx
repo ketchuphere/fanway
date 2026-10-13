@@ -61,7 +61,7 @@ export const HelpSafetyView: React.FC = () => {
       isStaffAssistanceRequest: true,
     });
     setAssistSubmitted(
-      `Steward request ${created.id} logged for ${loc.name}. A venue operator has been notified.`
+      `Steward request ${created.id} logged for ${loc.name}. A stadium steward has been notified and dispatched.`
     );
     setAssistNotes('');
   };

@@ -1,5 +1,5 @@
 export type SportType = 'cricket';
-export type UserRole = 'fan' | 'operator' | 'admin';
+export type UserRole = 'fan';
 export type Language = 'en' | 'hi' | 'or';
 
 export type LocationCategory =

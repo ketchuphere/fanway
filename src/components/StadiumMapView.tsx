@@ -6,7 +6,6 @@ import {
   MapPin,
   Clock,
   Footprints,
-  Sparkles,
   CheckCircle2,
   AlertTriangle,
   Ticket,
@@ -57,7 +56,6 @@ export const StadiumMapView: React.FC = () => {
     setMapRouteDestinationId,
     recordSearchTerm,
     setFanTab,
-    askConciergeQuestion,
   } = useStadium();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -1236,18 +1234,6 @@ export const StadiumMapView: React.FC = () => {
                   View Stall Menu & Order
                 </button>
               )}
-
-              <button
-                onClick={() =>
-                  askConciergeQuestion(
-                    `Tell me about ${selectedLocation.name} at ${activeStadium.name} and how to get there from ${userOrigin.name}.`
-                  )
-                }
-                className="flex-1 py-2 px-3 bg-[#0B1120] hover:bg-[#1E293B] text-white border border-[#1E293B] font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#84CC16]" />
-                <span>Ask AI About This Spot</span>
-              </button>
 
               <button
                 onClick={() => updateFanProfile({ currentLocationId: selectedLocation.id })}

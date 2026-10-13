@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   Utensils,
-  Sparkles,
   Clock,
   Footprints,
   ShoppingBag,
@@ -101,38 +100,6 @@ export const FoodFinderView: React.FC = () => {
       .sort((a, b) => a.totalTime - b.totalTime);
   }, [enrichedStalls, maxWaitMinutes]);
 
-  // Smart Top Recommendation Banner (exact format requested in prompt)
-  const topRecommendation = useMemo(() => {
-    const candidates: {
-      item: MenuItem;
-      stallName: string;
-      locationId: string;
-      waitRange: string;
-      walkMins: number;
-      score: number;
-    }[] = [];
-
-    for (const s of visibleStalls) {
-      if (!s.stall.isOpen || s.loc?.status === 'Closed') continue;
-      for (const item of s.filteredMenu) {
-        if (!item.available) continue;
-        const score = s.waitMins * 2 + s.walkMins * 2 + item.priceINR / 50;
-        candidates.push({
-          item,
-          stallName: s.stall.name.split(' · ')[0],
-          locationId: s.stall.locationId,
-          waitRange: s.pred
-            ? `${s.pred.minWaitMinutes}–${s.pred.maxWaitMinutes} minutes`
-            : '4–6 minutes',
-          walkMins: s.walkMins,
-          score,
-        });
-      }
-    }
-    candidates.sort((a, b) => a.score - b.score);
-    return candidates[0] || null;
-  }, [visibleStalls]);
-
   const cartTotalINR = cart.reduce((sum, c) => sum + c.item.priceINR * c.quantity, 0);
   const cartCount = cart.reduce((sum, c) => sum + c.quantity, 0);
 
@@ -147,38 +114,6 @@ export const FoodFinderView: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Smart Recommendation Banner */}
-      {topRecommendation && (
-        <div className="bg-[#111827] border border-[#84CC16]/40 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#84CC16]">
-              <Sparkles className="w-4 h-4" />
-              <span>Smart Turnaround Recommendation (Demo Dataset)</span>
-            </div>
-            <p className="text-sm sm:text-base font-medium text-white">
-              “{topRecommendation.item.name} ({topRecommendation.item.isVeg ? 'Vegetarian' : 'Non-Veg'}{' '}
-              {topRecommendation.item.category.toLowerCase()}) is available at{' '}
-              <span className="text-[#84CC16] font-semibold">{topRecommendation.stallName}</span> for{' '}
-              <span className="font-mono-tabular font-bold">₹{topRecommendation.item.priceINR}</span>.
-              The estimated wait is{' '}
-              <span className="font-mono-tabular font-semibold">{topRecommendation.waitRange}</span>,
-              with approximately{' '}
-              <span className="font-mono-tabular font-semibold">
-                {topRecommendation.walkMins} minutes
-              </span>{' '}
-              of walking time from {userOrigin.name.split(' (')[0]}.”
-            </p>
-          </div>
-          <button
-            onClick={() => navigateToMapLocation(topRecommendation.locationId, true)}
-            className="px-4 py-2 bg-[#0B1120] hover:bg-[#1E293B] text-[#84CC16] border border-[#1E293B] rounded-xl text-xs font-semibold shrink-0 cursor-pointer flex items-center gap-1.5"
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            <span>Route to {topRecommendation.stallName}</span>
-          </button>
-        </div>
-      )}
-
       {/* Confirmation Banner if an order was just placed */}
       {recentOrderBanner && (
         <div className="bg-[#111827] border border-[#22C55E] rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">

@@ -2,11 +2,8 @@ import React from 'react';
 import {
   ArrowRight,
   MapPin,
-  Sparkles,
+  Trophy,
   Clock,
-  Ticket,
-  LayoutDashboard,
-  Building2,
   ScanBarcode,
 } from 'lucide-react';
 import { useStadium } from '../context/StadiumContext';
@@ -16,32 +13,12 @@ export const LandingPageView: React.FC = () => {
   const {
     setShowLanding,
     setShowTicketAuth,
-    setRole,
     setFanTab,
-    setOperatorTab,
-    events,
-    activeEvent,
-    selectEvent,
     venueConfig,
   } = useStadium();
 
   const launchFanApp = (tab: 'home' | 'map' | 'food' | 'concierge' | 'match' | 'safety' = 'home') => {
-    setRole('fan');
     setFanTab(tab);
-    setShowLanding(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const launchOperatorDashboard = () => {
-    setRole('operator');
-    setOperatorTab('overview');
-    setShowLanding(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const launchAdminSettings = () => {
-    setRole('admin');
-    setOperatorTab('settings');
     setShowLanding(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -68,9 +45,6 @@ export const LandingPageView: React.FC = () => {
           <a href="#features" className="hover:text-white transition-colors">
             Core Features
           </a>
-          <a href="#roles" className="hover:text-white transition-colors">
-            Interactive Views
-          </a>
           <button
             onClick={launchTicketLogin}
             className="hover:text-white transition-colors cursor-pointer"
@@ -78,17 +52,6 @@ export const LandingPageView: React.FC = () => {
             Ticket & Barcode Scan
           </button>
         </nav>
-
-        {/* Zone 3: Primary Action */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => launchFanApp('home')}
-            className="px-4 py-2 text-xs font-semibold text-[#0B1120] bg-[#84CC16] rounded-lg hover:bg-[#A3E635] transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5"
-          >
-            <span>Launch App</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
       </header>
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 sm:px-10 py-10 sm:py-16 space-y-16">
@@ -120,28 +83,6 @@ export const LandingPageView: React.FC = () => {
                 className="px-5 py-3 bg-[#111827] hover:bg-[#1E293B] text-white border border-[#1E293B] font-semibold text-xs sm:text-sm rounded-xl transition-colors cursor-pointer"
               >
                 Fan Companion View
-              </button>
-
-              <button
-                onClick={launchOperatorDashboard}
-                className="px-4 py-3 bg-[#111827] hover:bg-[#1E293B] text-[#94A3B8] hover:text-white border border-[#1E293B] font-medium text-xs sm:text-sm rounded-xl transition-colors cursor-pointer"
-              >
-                Operator Console
-              </button>
-            </div>
-
-            {/* Quick IPL Match Indicator */}
-            <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-[#64748B]">
-              <span>IPL Fixture:</span>
-              <button
-                onClick={() => {
-                  if (events[0]) selectEvent(events[0].id);
-                  launchFanApp('home');
-                }}
-                className="px-3 py-1 bg-[#0B1120] hover:bg-[#1E293B] text-[#84CC16] border border-[#1E293B] rounded-lg transition-colors cursor-pointer font-medium flex items-center gap-1.5"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#84CC16]" />
-                <span>TATA IPL · {activeEvent?.title || 'Chennai Super Kings vs Mumbai Indians'}</span>
               </button>
             </div>
           </div>
@@ -196,17 +137,17 @@ export const LandingPageView: React.FC = () => {
 
             {/* Card 2 */}
             <div
-              onClick={() => launchFanApp('concierge')}
+              onClick={() => launchFanApp('match')}
               className="p-5 bg-[#111827] hover:bg-[#1E293B]/70 border border-[#1E293B] rounded-2xl transition-all cursor-pointer space-y-3 group"
             >
               <div className="w-10 h-10 rounded-xl bg-[#0B1120] border border-[#1E293B] flex items-center justify-center text-[#84CC16]">
-                <Sparkles className="w-5 h-5" />
+                <Trophy className="w-5 h-5" />
               </div>
               <h3 className="text-base font-semibold text-white group-hover:text-[#84CC16] transition-colors">
-                Grounded AI Concierge
+                Live Match Center
               </h3>
               <p className="text-xs text-[#94A3B8] leading-relaxed">
-                Server-side Gemini assistant with 9 live tools to check queues, menu items, routes, and assistance without hallucinations.
+                Real-time scores, innings statistics, match phase breakdowns, and break timings for your fixture.
               </p>
             </div>
 
@@ -244,78 +185,7 @@ export const LandingPageView: React.FC = () => {
           </div>
         </section>
 
-        {/* 3. ROLES STRIP: Simple 3-Box Switcher */}
-        <section id="roles" className="space-y-6 pt-6 border-t border-[#1E293B]">
-          <div className="space-y-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-              Three Interactive Perspectives
-            </h2>
-            <p className="text-xs sm:text-sm text-[#94A3B8]">
-              Switch roles freely to test the app from any viewpoint.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Fan */}
-            <div className="p-5 bg-[#111827] border border-[#1E293B] rounded-2xl flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                  <Ticket className="w-4 h-4 text-[#84CC16]" />
-                  <span>Fan Companion</span>
-                </div>
-                <p className="text-xs text-[#94A3B8] leading-relaxed">
-                  Mobile-optimized match screen, map routing, queue monitors, AI chat, and order activity.
-                </p>
-              </div>
-              <button
-                onClick={() => launchFanApp('home')}
-                className="w-full py-2 bg-[#84CC16] hover:bg-[#A3E635] text-[#0B1120] font-semibold text-xs rounded-xl transition-colors cursor-pointer"
-              >
-                Launch Fan View
-              </button>
-            </div>
-
-            {/* Operator */}
-            <div className="p-5 bg-[#111827] border border-[#1E293B] rounded-2xl flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                  <LayoutDashboard className="w-4 h-4 text-[#38BDF8]" />
-                  <span>Venue Operator</span>
-                </div>
-                <p className="text-xs text-[#94A3B8] leading-relaxed">
-                  Real-time queue length overrides, counter management, food inventory, and incident triage.
-                </p>
-              </div>
-              <button
-                onClick={launchOperatorDashboard}
-                className="w-full py-2 bg-[#0B1120] hover:bg-[#1E293B] text-white border border-[#1E293B] font-medium text-xs rounded-xl transition-colors cursor-pointer"
-              >
-                Launch Operator View
-              </button>
-            </div>
-
-            {/* Admin */}
-            <div className="p-5 bg-[#111827] border border-[#1E293B] rounded-2xl flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                  <Building2 className="w-4 h-4 text-[#F59E0B]" />
-                  <span>Stadium Admin</span>
-                </div>
-                <p className="text-xs text-[#94A3B8] leading-relaxed">
-                  Configure emergency contacts, match break timing, facility nodes, and safety notices.
-                </p>
-              </div>
-              <button
-                onClick={launchAdminSettings}
-                className="w-full py-2 bg-[#0B1120] hover:bg-[#1E293B] text-white border border-[#1E293B] font-medium text-xs rounded-xl transition-colors cursor-pointer"
-              >
-                Launch Admin View
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. FOOTER */}
+        {/* 3. FOOTER */}
         <footer className="pt-8 border-t border-[#1E293B] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#64748B]">
           <div className="flex items-center gap-2">
             <span className="font-bold text-white font-display">

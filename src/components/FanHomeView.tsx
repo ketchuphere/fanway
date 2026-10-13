@@ -2,7 +2,6 @@ import React from 'react';
 import {
   MapPin,
   Utensils,
-  Sparkles,
   ShieldAlert,
   Navigation,
   Clock,
@@ -30,13 +29,24 @@ export const FanHomeView: React.FC = () => {
     setShowSetupModal,
     setShowTicketAuth,
     navigateToMapLocation,
-    askConciergeQuestion,
   } = useStadium();
 
   const t = TRANSLATIONS[language];
 
   const userOrigin =
-    locations.find((l) => l.id === fanProfile.currentLocationId) || locations[0];
+    locations.find((l) => l.id === fanProfile.currentLocationId) ||
+    locations[0] || {
+      id: 'origin-stand',
+      name: fanProfile.section || 'My Stand',
+      category: 'section' as const,
+      zone: 'Concourse' as const,
+      x: 50,
+      y: 50,
+      openCounters: 1,
+      accessible: true,
+      dataSource: 'verified_config' as const,
+      lastUpdated: 'Just now',
+    };
 
   // Key facilities to highlight on home screen
   const featuredFacilities = locations
@@ -64,16 +74,24 @@ export const FanHomeView: React.FC = () => {
         (a, b) =>
           Math.hypot(a.x - userOrigin.x, a.y - userOrigin.y) -
           Math.hypot(b.x - userOrigin.x, b.y - userOrigin.y)
-      )[0] || locations.find((l) => l.category === 'washroom')!;
+      )[0] ||
+    locations.find((l) => l.category === 'washroom') ||
+    locations.find((l) => l.name.toLowerCase().includes('washroom') || l.name.toLowerCase().includes('toilet')) ||
+    locations.find((l) => l.category === 'gate') ||
+    userOrigin;
 
   const nearestExit =
     locations
-      .filter((l) => l.category === 'exit')
+      .filter((l) => l.category === 'exit' || l.category === 'gate')
       .sort(
         (a, b) =>
           Math.hypot(a.x - userOrigin.x, a.y - userOrigin.y) -
           Math.hypot(b.x - userOrigin.x, b.y - userOrigin.y)
-      )[0] || locations.find((l) => l.category === 'exit')!;
+      )[0] ||
+    locations.find((l) => l.category === 'exit') ||
+    locations.find((l) => l.category === 'gate') ||
+    locations.find((l) => l.name.toLowerCase().includes('gate') || l.name.toLowerCase().includes('exit')) ||
+    userOrigin;
 
   const nearestFirstAid =
     locations
@@ -82,7 +100,10 @@ export const FanHomeView: React.FC = () => {
         (a, b) =>
           Math.hypot(a.x - userOrigin.x, a.y - userOrigin.y) -
           Math.hypot(b.x - userOrigin.x, b.y - userOrigin.y)
-      )[0] || locations.find((l) => l.category === 'first_aid')!;
+      )[0] ||
+    locations.find((l) => l.category === 'first_aid') ||
+    locations.find((l) => l.name.toLowerCase().includes('aid') || l.name.toLowerCase().includes('medical')) ||
+    userOrigin;
 
   return (
     <div className="space-y-8">
@@ -240,45 +261,58 @@ export const FanHomeView: React.FC = () => {
               </div>
             )}
 
-            {/* AI Concierge Prompt Starters */}
+            {/* Concourse Quick Shortcuts */}
             <div className="mt-5 pt-4 border-t border-[#1E293B]">
               <div className="text-xs font-medium text-white mb-2.5 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#84CC16]" />
-                <span>Instant AI Concierge Questions</span>
+                <Navigation className="w-3.5 h-3.5 text-[#84CC16]" />
+                <span>Quick Seat Actions</span>
               </div>
               <div className="space-y-1.5">
-                {[
-                  `I have ${activeEvent.nextBreakInMinutes} minutes before the break ends. Where can I get vegetarian snacks with the shortest queue?`,
-                  `Where is the nearest accessible washroom to ${fanProfile.section}?`,
-                  `How do I reach the ride-share pickup point after the match?`,
-                ].map((q, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => askConciergeQuestion(q)}
-                    className="w-full text-left text-xs text-[#CBD5E1] hover:text-white bg-[#0B1120] hover:bg-[#1E293B] border border-[#1E293B] rounded-lg px-3 py-2 transition-colors flex items-center justify-between gap-2 cursor-pointer"
-                  >
-                    <span className="truncate">{q}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#84CC16] shrink-0" />
-                  </button>
-                ))}
+                <button
+                  onClick={() => {
+                    if (nearestWashroom?.id) navigateToMapLocation(nearestWashroom.id, true);
+                    else setFanTab('map');
+                  }}
+                  className="w-full text-left text-xs text-[#CBD5E1] hover:text-white bg-[#0B1120] hover:bg-[#1E293B] border border-[#1E293B] rounded-lg px-3 py-2 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+                >
+                  <span className="truncate">Route to nearest washroom ({nearestWashroom?.name || 'Washroom'})</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#84CC16] shrink-0" />
+                </button>
+                <button
+                  onClick={() => setFanTab('food')}
+                  className="w-full text-left text-xs text-[#CBD5E1] hover:text-white bg-[#0B1120] hover:bg-[#1E293B] border border-[#1E293B] rounded-lg px-3 py-2 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+                >
+                  <span className="truncate">Explore food & beverages with shortest queue</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#84CC16] shrink-0" />
+                </button>
+                <button
+                  onClick={() => {
+                    if (nearestExit?.id) navigateToMapLocation(nearestExit.id, true);
+                    else setFanTab('map');
+                  }}
+                  className="w-full text-left text-xs text-[#CBD5E1] hover:text-white bg-[#0B1120] hover:bg-[#1E293B] border border-[#1E293B] rounded-lg px-3 py-2 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+                >
+                  <span className="truncate">Directions to nearest exit ({nearestExit?.name || 'Gate / Exit'})</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#84CC16] shrink-0" />
+                </button>
               </div>
             </div>
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-3">
             <button
-              onClick={() => setFanTab('concierge')}
+              onClick={() => setFanTab('map')}
               className="py-2.5 px-4 bg-[#84CC16] hover:bg-[#A3E635] text-[#0B1120] font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>{t.askStadiumIQ}</span>
+              <MapPin className="w-4 h-4" />
+              <span>{t.openStadiumMap}</span>
             </button>
             <button
-              onClick={() => setFanTab('map')}
+              onClick={() => setFanTab('food')}
               className="py-2.5 px-4 bg-[#0B1120] hover:bg-[#1E293B] text-white border border-[#1E293B] font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <MapPin className="w-4 h-4 text-[#84CC16]" />
-              <span>{t.openStadiumMap}</span>
+              <Utensils className="w-4 h-4 text-[#84CC16]" />
+              <span>{t.findFood}</span>
             </button>
           </div>
         </div>
@@ -303,25 +337,31 @@ export const FanHomeView: React.FC = () => {
         </button>
 
         <button
-          onClick={() => navigateToMapLocation(nearestWashroom.id, true)}
+          onClick={() => {
+            if (nearestWashroom?.id) navigateToMapLocation(nearestWashroom.id, true);
+            else setFanTab('map');
+          }}
           className="bg-[#111827] hover:bg-[#1E293B]/80 border border-[#1E293B] rounded-2xl p-4 text-left transition-colors cursor-pointer group"
         >
           <div className="flex items-center justify-between">
             <Navigation className="w-5 h-5 text-[#38BDF8]" />
             <span className="text-xs font-mono-tabular text-[#94A3B8]">
-              ~{queuePredictions[nearestWashroom.id]?.estimatedWaitMinutes || 2}m wait
+              ~{nearestWashroom?.id && queuePredictions[nearestWashroom.id]?.estimatedWaitMinutes ? queuePredictions[nearestWashroom.id].estimatedWaitMinutes : 2}m wait
             </span>
           </div>
           <div className="text-base font-bold text-white font-display mt-3 group-hover:text-[#38BDF8] transition-colors">
             {t.nearestWashroom}
           </div>
           <div className="text-xs text-[#94A3B8] mt-1 truncate">
-            Route to {nearestWashroom.name}
+            Route to {nearestWashroom?.name || 'Washroom'}
           </div>
         </button>
 
         <button
-          onClick={() => navigateToMapLocation(nearestExit.id, true)}
+          onClick={() => {
+            if (nearestExit?.id) navigateToMapLocation(nearestExit.id, true);
+            else setFanTab('map');
+          }}
           className="bg-[#111827] hover:bg-[#1E293B]/80 border border-[#1E293B] rounded-2xl p-4 text-left transition-colors cursor-pointer group"
         >
           <div className="flex items-center justify-between">
@@ -332,12 +372,15 @@ export const FanHomeView: React.FC = () => {
             {t.emergencyExits}
           </div>
           <div className="text-xs text-[#94A3B8] mt-1 truncate">
-            Nearest: {nearestExit.name}
+            Nearest: {nearestExit?.name || 'Gate / Exit'}
           </div>
         </button>
 
         <button
-          onClick={() => setFanTab('safety')}
+          onClick={() => {
+            if (nearestFirstAid?.id) navigateToMapLocation(nearestFirstAid.id, true);
+            else setFanTab('safety');
+          }}
           className="bg-[#111827] hover:bg-[#1E293B]/80 border border-[#1E293B] rounded-2xl p-4 text-left transition-colors cursor-pointer group"
         >
           <div className="flex items-center justify-between">
@@ -348,7 +391,7 @@ export const FanHomeView: React.FC = () => {
             {t.firstAidHelp}
           </div>
           <div className="text-xs text-[#94A3B8] mt-1 truncate">
-            Nearest: {nearestFirstAid.name}
+            Nearest: {nearestFirstAid?.name || 'First Aid Post'}
           </div>
         </button>
       </section>

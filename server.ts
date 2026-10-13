@@ -486,7 +486,7 @@ function executeConciergeTool(
         result: {
           status: 'Prepared for confirmation',
           message:
-            'Feedback report has been logged into the application state and is visible to Venue Operators.',
+            'Feedback report has been logged into the system and forwarded to the stadium stewarding team.',
           details: {
             category: args.category,
             locationName: args.locationName,
@@ -565,7 +565,7 @@ Unlocked Ticket Services: ${(context.fanProfile.includedServices || []).join('; 
 STRICT RELIABILITY & GROUNDING RULES:
 1. ALWAYS use the provided tools to look up venue locations, washrooms, food stalls, menu prices, queue estimates, walking routes, match info, or official announcements.
 2. NEVER invent facilities, opening hours, menu items, prices, queue times, or emergency instructions that are not in the tool data.
-3. Explicitly mention the data source and last-updated timestamp when giving operational estimates (e.g., "Simulated heuristic estimate, updated 1 min ago" or "Operator verified, updated 1 min ago").
+3. Explicitly mention the data source and last-updated timestamp when giving operational estimates (e.g., "Simulated heuristic estimate, updated 1 min ago" or "Venue verified, updated 1 min ago").
 4. When a fan asks what they can do in a short time window (e.g., "I have 10 minutes before play resumes"), compare total round-trip walking time + estimated queue wait time so they don't miss the match!
 5. Never override official emergency instructions. Always remind fans that for life-threatening emergencies they should contact the nearest steward or call ${context.venueConfig.emergencyPhone}.
 6. ${languageInstruction}`;

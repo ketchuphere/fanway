@@ -19,7 +19,6 @@ export const MatchCenterView: React.FC = () => {
     venueConfig,
     announcements,
     setFanTab,
-    askConciergeQuestion,
   } = useStadium();
 
   return (
@@ -142,16 +141,6 @@ export const MatchCenterView: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <button
-              onClick={() =>
-                askConciergeQuestion(
-                  `I have ${activeEvent.nextBreakInMinutes} minutes until the ${activeEvent.breakLabel}. What is the fastest food and washroom plan from my seat?`
-                )
-              }
-              className="w-full py-2.5 px-4 bg-[#84CC16] hover:bg-[#A3E635] text-[#0B1120] font-semibold text-xs rounded-xl transition-colors cursor-pointer"
-            >
-              Plan My Break with AI Concierge
-            </button>
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setFanTab('food')}
