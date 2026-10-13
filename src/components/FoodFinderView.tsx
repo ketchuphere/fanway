@@ -14,6 +14,7 @@ import {
 import { useStadium } from '../context/StadiumContext';
 import { calculateVenueRoute } from '../utils/queuePrediction';
 import { MenuItem } from '../types/stadium';
+import stadiumConcourseFoodImg from '../assets/images/stadium_concourse_food_1791698090785.jpg';
 
 export const FoodFinderView: React.FC = () => {
   const {
@@ -204,16 +205,38 @@ export const FoodFinderView: React.FC = () => {
 
       {/* Filter Bar */}
       <div className="bg-[#111827] border border-[#1E293B] rounded-2xl p-5 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-[#84CC16]" />
-            <h1 className="text-lg font-bold text-white font-display">
-              Concourse Food & Beverage Finder
-            </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <img
+              src={stadiumConcourseFoodImg}
+              alt="Match-Day Concourse Food Kiosks"
+              className="w-16 h-12 object-cover rounded-xl border border-[#1E293B] shrink-0"
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-[#84CC16]" />
+                <h1 className="text-lg font-bold text-white font-display">
+                  Concourse Food & Beverage Finder
+                </h1>
+              </div>
+              <p className="text-xs text-[#94A3B8] mt-0.5">
+                Ranked by fastest combined walking + queue turnaround from {userOrigin.name.split(' (')[0]}
+              </p>
+            </div>
           </div>
-          <span className="text-xs text-[#94A3B8]">
-            Ranked by fastest combined walking + queue turnaround from {userOrigin.name.split(' (')[0]}
-          </span>
+          <button
+            onClick={() => {
+              if (visibleStalls[0]) {
+                navigateToMapLocation(visibleStalls[0].stall.locationId, true);
+              } else {
+                setFanTab('map');
+              }
+            }}
+            className="px-3.5 py-2 bg-[#0B1120] hover:bg-[#1E293B] border border-[#1E293B] text-xs font-semibold text-[#84CC16] rounded-xl transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          >
+            <MapPin className="w-3.5 h-3.5" />
+            <span>View Food on Map</span>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">

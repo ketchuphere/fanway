@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
   Navigation,
@@ -15,11 +15,18 @@ import {
   ShieldCheck,
   Compass,
   Trophy,
+  Image as ImageIcon,
+  Layers,
+  Map as MapIcon,
+  ExternalLink,
 } from 'lucide-react';
 import { useStadium } from '../context/StadiumContext';
 import { LocationCategory, VenueLocation } from '../types/stadium';
 import { calculateVenueRoute } from '../utils/queuePrediction';
 import { StadiumStand } from '../data/iplStadiumsData';
+import heroStadiumNightImg from '../assets/images/hero_stadium_night_1791698076150.jpg';
+import stadiumConcourseFoodImg from '../assets/images/stadium_concourse_food_1791698090785.jpg';
+import stadiumControlOpsImg from '../assets/images/stadium_control_ops_1791698103620.jpg';
 
 const CATEGORY_FILTERS: { id: 'all' | LocationCategory; label: string }[] = [
   { id: 'all', label: 'All Facilities' },
@@ -57,6 +64,8 @@ export const StadiumMapView: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<'all' | LocationCategory>('all');
   const [accessibleOnly, setAccessibleOnly] = useState(false);
   const [showSeatAssignerModal, setShowSeatAssignerModal] = useState(false);
+  const [mapViewMode, setMapViewMode] = useState<'real_image' | 'concourse'>('real_image');
+  const [imageBlendLevel, setImageBlendLevel] = useState<'vivid' | 'balanced' | 'blueprint'>('balanced');
 
   // Seat Assigner local state
   const [assignStandId, setAssignStandId] = useState<string>(
@@ -69,6 +78,37 @@ export const StadiumMapView: React.FC = () => {
   const [assignSeatNum, setAssignSeatNum] = useState<string>(
     fanProfile.seat.replace(/[^0-9]/g, '') || '04'
   );
+
+  // Sync stand state when stadium changes
+  useEffect(() => {
+    if (activeStadium.stands.length > 0) {
+      setAssignStandId(activeStadium.stands[0].id);
+      setAssignTier(activeStadium.stands[0].tierLevels[0] || 'Lower Bowl');
+    }
+  }, [activeStadiumId, activeStadium.stands]);
+
+  // Dynamic cardinal labels derived from real stadium gates and stands
+  const cardinalLabels = useMemo(() => {
+    const northGate = locations.find((l) => l.category === 'gate' && l.zone === 'North');
+    const southGate = locations.find((l) => l.category === 'gate' && l.zone === 'South');
+    const eastGate = locations.find((l) => l.category === 'gate' && l.zone === 'East');
+    const westGate = locations.find((l) => l.category === 'gate' && l.zone === 'West');
+
+    return {
+      north: northGate
+        ? `${northGate.name.split(' (')[0].toUpperCase()} · NORTH ENTRY`
+        : 'NORTH PAVILION & MAIN TURNSTILES',
+      south: southGate
+        ? `${southGate.name.split(' (')[0].toUpperCase()} · SOUTH ENTRY`
+        : 'SOUTH ESPLANADE & VIP ENTRANCE',
+      east: eastGate
+        ? `${eastGate.name.split(' (')[0].toUpperCase()} · EAST ENTRY`
+        : 'EAST METRO & HIGHWAY LINK',
+      west: westGate
+        ? `${westGate.name.split(' (')[0].toUpperCase()} · WEST ENTRY`
+        : 'WEST TERRACE PROMENADE',
+    };
+  }, [locations]);
 
   const selectedStand = useMemo(() => {
     return (
@@ -387,8 +427,85 @@ export const StadiumMapView: React.FC = () => {
 
       {/* 3. Main Split: Interactive Cricket Arena Seating SVG (7 Cols) + Wayfinding & Seat Details (5 Cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left 7 Cols: Interactive SVG Cricket Stadium Seating Map */}
+        {/* Left 7 Cols: Interactive Cricket Arena Seating SVG (7 Cols) or Real Leaflet Map */}
         <div className="lg:col-span-7 bg-[#111827] border border-[#1E293B] rounded-2xl p-4 sm:p-5 space-y-3">
+          {/* Map View Mode Switcher: Real Stadium Arena Image Map vs Concourse Blueprint Schematic */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pb-1">
+            <div className="flex items-center gap-1.5 bg-[#0B1120] border border-[#1E293B] rounded-xl p-1 shadow-inner">
+              <button
+                type="button"
+                onClick={() => setMapViewMode('real_image')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                  mapViewMode === 'real_image'
+                    ? 'bg-[#84CC16] text-[#0B1120] shadow-md shadow-[#84CC16]/20'
+                    : 'text-[#94A3B8] hover:text-white hover:bg-[#1E293B]/50'
+                }`}
+              >
+                <ImageIcon className="w-3.5 h-3.5" />
+                <span>Real Stadium Arena Image Map</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapViewMode('concourse')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                  mapViewMode === 'concourse'
+                    ? 'bg-[#84CC16] text-[#0B1120] shadow-md shadow-[#84CC16]/20'
+                    : 'text-[#94A3B8] hover:text-white hover:bg-[#1E293B]/50'
+                }`}
+              >
+                <MapIcon className="w-3.5 h-3.5" />
+                <span>Concourse Blueprint Schematic</span>
+              </button>
+            </div>
+
+            {/* Quick blend options if in real_image mode */}
+            {mapViewMode === 'real_image' ? (
+              <div className="flex items-center gap-1 bg-[#0B1120] border border-[#1E293B] rounded-lg p-0.5 text-[10px]">
+                <span className="text-[#64748B] px-1.5 font-medium flex items-center gap-1">
+                  <Layers className="w-3 h-3 text-[#84CC16]" /> View:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setImageBlendLevel('vivid')}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    imageBlendLevel === 'vivid'
+                      ? 'bg-[#1E293B] text-white font-semibold'
+                      : 'text-[#94A3B8] hover:text-white'
+                  }`}
+                >
+                  Vivid Photo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageBlendLevel('balanced')}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    imageBlendLevel === 'balanced'
+                      ? 'bg-[#1E293B] text-[#84CC16] font-semibold'
+                      : 'text-[#94A3B8] hover:text-white'
+                  }`}
+                >
+                  Balanced HUD
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageBlendLevel('blueprint')}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    imageBlendLevel === 'blueprint'
+                      ? 'bg-[#1E293B] text-white font-semibold'
+                      : 'text-[#94A3B8] hover:text-white'
+                  }`}
+                >
+                  Dark Overlay
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-[11px] text-[#94A3B8]">
+                <span className="w-2 h-2 rounded-full bg-[#84CC16]" />
+                <span className="font-medium text-white">{activeStadium.city}</span>
+              </div>
+            )}
+          </div>
+
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#94A3B8]">
             <div className="flex flex-wrap items-center gap-4">
               <span className="flex items-center gap-1.5">
@@ -405,11 +522,11 @@ export const StadiumMapView: React.FC = () => {
               </span>
             </div>
             <span className="font-mono-tabular text-[11px] text-[#64748B]">
-              Tip: Click any Stand polygon on map to assign seat
+              Tip: Click any stand or gate to plot walking navigation
             </span>
           </div>
 
-          {/* SVG Map Container */}
+          {/* Interactive Arena Seating Map (Photo Map or Blueprint Schematic) */}
           <div className="relative w-full aspect-[10/7] bg-[#070D18] border border-[#1E293B] rounded-xl overflow-hidden shadow-inner">
             <svg
               viewBox="0 0 1000 700"
@@ -427,30 +544,62 @@ export const StadiumMapView: React.FC = () => {
                   <stop offset="50%" stopColor="#DFBF9B" />
                   <stop offset="100%" stopColor="#B89467" />
                 </linearGradient>
+                <clipPath id="stadiumClip">
+                  <rect x="0" y="0" width="1000" height="700" rx="48" />
+                </clipPath>
               </defs>
 
-              {/* Outer Stadium Plaza & Boundary */}
-              <rect
-                x="15"
-                y="15"
-                width="970"
-                height="670"
-                rx="48"
-                fill="#070D18"
-                stroke="#1E293B"
-                strokeWidth="2"
-              />
-
-              {/* Concourse Outer Ring */}
-              <ellipse
-                cx="500"
-                cy="350"
-                rx="430"
-                ry="300"
-                fill="#0B1120"
-                stroke="#1E293B"
-                strokeWidth="3"
-              />
+              {/* Real Stadium Arena Photo Backdrop or Dark Concourse Canvas */}
+              {mapViewMode === 'real_image' ? (
+                <g clipPath="url(#stadiumClip)">
+                  <image
+                    href={heroStadiumNightImg}
+                    x="0"
+                    y="0"
+                    width="1000"
+                    height="700"
+                    preserveAspectRatio="xMidYMid slice"
+                  />
+                  <rect
+                    x="0"
+                    y="0"
+                    width="1000"
+                    height="700"
+                    fill="#070D18"
+                    fillOpacity={
+                      imageBlendLevel === 'vivid'
+                        ? 0.32
+                        : imageBlendLevel === 'balanced'
+                        ? 0.52
+                        : 0.72
+                    }
+                  />
+                </g>
+              ) : (
+                <g>
+                  {/* Outer Stadium Plaza & Boundary */}
+                  <rect
+                    x="15"
+                    y="15"
+                    width="970"
+                    height="670"
+                    rx="48"
+                    fill="#070D18"
+                    stroke="#1E293B"
+                    strokeWidth="2"
+                  />
+                  {/* Concourse Outer Ring */}
+                  <ellipse
+                    cx="500"
+                    cy="350"
+                    rx="430"
+                    ry="300"
+                    fill="#0B1120"
+                    stroke="#1E293B"
+                    strokeWidth="3"
+                  />
+                </g>
+              )}
 
               {/* ----------------- INTERACTIVE STANDS POLYGONS / ARCS ----------------- */}
               {activeStadium.stands.map((stand) => {
@@ -584,10 +733,10 @@ export const StadiumMapView: React.FC = () => {
 
               {/* Cardinal Gate / Concourse Direction Markers */}
               <text x="500" y="42" textAnchor="middle" fill="#64748B" fontSize="11" fontWeight="700">
-                NORTH PAVILION & MAIN TURNSTILES
+                {cardinalLabels.north}
               </text>
               <text x="500" y="675" textAnchor="middle" fill="#64748B" fontSize="11" fontWeight="700">
-                SOUTH ESPLANADE & VIP ENTRANCE
+                {cardinalLabels.south}
               </text>
               <text
                 x="970"
@@ -598,7 +747,7 @@ export const StadiumMapView: React.FC = () => {
                 fontWeight="700"
                 transform="rotate(90, 970, 350)"
               >
-                EAST METRO & HIGHWAY LINK
+                {cardinalLabels.east}
               </text>
               <text
                 x="32"
@@ -609,7 +758,7 @@ export const StadiumMapView: React.FC = () => {
                 fontWeight="700"
                 transform="rotate(-90, 32, 350)"
               >
-                WEST TERRACE PROMENADE
+                {cardinalLabels.west}
               </text>
 
               {/* Concourse Walkway Routing Graph Lines */}
@@ -749,6 +898,97 @@ export const StadiumMapView: React.FC = () => {
                 );
               })}
             </svg>
+          </div>
+
+          {/* Concourse Real Photo Checkpoints & Facility Previews */}
+          <div className="pt-2 border-t border-[#1E293B]/70">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#84CC16]">
+                  Real Concourse Navigation Checkpoints
+                </span>
+                <span className="text-[11px] text-[#64748B]">· Ground-level visual wayfinding</span>
+              </div>
+              <span className="text-[11px] text-[#94A3B8]">
+                Match-Day Concourse Walkways
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Concourse Food & Drinks Photo Point */}
+              <div
+                onClick={() => {
+                  setActiveCategory('food');
+                  const firstFood = locations.find((l) => l.category === 'food');
+                  if (firstFood) {
+                    setSelectedMapLocationId(firstFood.id);
+                    setMapRouteDestinationId(firstFood.id);
+                  }
+                }}
+                className="group bg-[#0B1120] border border-[#1E293B] hover:border-[#84CC16]/60 rounded-xl p-2.5 transition-all cursor-pointer flex gap-3 items-center"
+              >
+                <div className="relative w-20 h-16 rounded-lg overflow-hidden shrink-0 border border-[#1E293B]">
+                  <img
+                    src={stadiumConcourseFoodImg}
+                    alt="Stadium Concourse Food & Drink Kiosks"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <span className="absolute bottom-1 left-1 px-1 py-0.2 rounded bg-black/75 text-[9px] font-bold text-[#84CC16]">
+                    FOOD
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-semibold text-white truncate group-hover:text-[#84CC16] transition-colors">
+                      Concourse Food & Kiosks
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#94A3B8] line-clamp-1 mt-0.5">
+                    Snacks, drinks & quick refill kiosks
+                  </p>
+                  <span className="text-[10px] text-[#84CC16] font-medium flex items-center gap-1 mt-1">
+                    Route to nearest stall →
+                  </span>
+                </div>
+              </div>
+
+              {/* Arena Safety & Operations Control Photo Point */}
+              <div
+                onClick={() => {
+                  setActiveCategory('first_aid');
+                  const firstAid = locations.find((l) => l.category === 'first_aid');
+                  if (firstAid) {
+                    setSelectedMapLocationId(firstAid.id);
+                    setMapRouteDestinationId(firstAid.id);
+                  }
+                }}
+                className="group bg-[#0B1120] border border-[#1E293B] hover:border-[#EF4444]/60 rounded-xl p-2.5 transition-all cursor-pointer flex gap-3 items-center"
+              >
+                <div className="relative w-20 h-16 rounded-lg overflow-hidden shrink-0 border border-[#1E293B]">
+                  <img
+                    src={stadiumControlOpsImg}
+                    alt="Arena Operations & Medical Dispatch"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <span className="absolute bottom-1 left-1 px-1 py-0.2 rounded bg-black/75 text-[9px] font-bold text-[#EF4444]">
+                    SAFETY
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-semibold text-white truncate group-hover:text-[#EF4444] transition-colors">
+                      Arena Operations & Medical
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#94A3B8] line-clamp-1 mt-0.5">
+                    First aid, control & stewards dispatch
+                  </p>
+                  <span className="text-[10px] text-[#EF4444] font-medium flex items-center gap-1 mt-1">
+                    Route to medical point →
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -923,8 +1163,50 @@ export const StadiumMapView: React.FC = () => {
                       : 'Standard walking path (Toggle Step-Free to avoid stairways).'}
                   </span>
                 </div>
+
+                {/* Real GPS Navigation & Real Map quick launcher */}
+                <div className="mt-3 pt-3 border-t border-[#1E293B] flex flex-wrap gap-2">
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${(
+                      selectedLocation.lat ||
+                      activeStadium.lat + ((350 - selectedLocation.y) / 700) * 0.003
+                    ).toFixed(5)},${(
+                      selectedLocation.lng ||
+                      activeStadium.lng + ((selectedLocation.x - 500) / 1000) * 0.0036
+                    ).toFixed(5)}&travelmode=walking`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2 px-3 bg-[#0B1120] hover:bg-[#1E293B] border border-[#84CC16]/40 text-[#84CC16] hover:text-white font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                  >
+                    <Navigation className="w-3.5 h-3.5 text-[#84CC16]" />
+                    <span>Open in Google Maps (Turn-by-Turn GPS)</span>
+                    <ExternalLink className="w-3 h-3 opacity-70" />
+                  </a>
+
+                  {mapViewMode !== 'real_image' && (
+                    <button
+                      type="button"
+                      onClick={() => setMapViewMode('real_image')}
+                      className="py-2 px-3 bg-[#0B1120] hover:bg-[#1E293B] border border-[#1E293B] text-white font-semibold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5 text-[#84CC16]" />
+                      <span>View on Arena Photo Map</span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
+
+            {/* Real Stadium Address & GPS Info */}
+            <div className="mt-4 pt-3 border-t border-[#1E293B] flex items-center justify-between text-[11px] text-[#64748B]">
+              <div className="flex items-center gap-1.5 truncate">
+                <MapPin className="w-3.5 h-3.5 text-[#84CC16] shrink-0" />
+                <span className="truncate">{activeStadium.address}</span>
+              </div>
+              <span className="shrink-0 font-mono-tabular text-[#94A3B8]">
+                {activeStadium.lat.toFixed(4)}°N, {activeStadium.lng.toFixed(4)}°E
+              </span>
+            </div>
 
             {/* Action Buttons */}
             <div className="mt-5 pt-4 border-t border-[#1E293B] flex flex-wrap gap-2.5">

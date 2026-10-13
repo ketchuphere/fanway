@@ -27,6 +27,9 @@ export interface VenueConfig {
   temperatureC: number;
   humidityPercent: number;
   isDemoVenue: boolean;
+  lat?: number;
+  lng?: number;
+  address?: string;
 }
 
 export interface SportEvent {
@@ -64,6 +67,8 @@ export interface VenueLocation {
   zone: 'North' | 'South' | 'East' | 'West' | 'Center';
   x: number; // 0 to 1000 on schematic SVG
   y: number; // 0 to 700 on schematic SVG
+  lat?: number; // Real GPS latitude
+  lng?: number; // Real GPS longitude
   accessible: boolean;
   status: 'Open' | 'Busy' | 'Closed';
   description: string;

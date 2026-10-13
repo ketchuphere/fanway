@@ -30,6 +30,11 @@ export interface IPLStadiumData {
   accentColor: string;
   capacity: number;
   description: string;
+  layoutImage: string;
+  lat: number;
+  lng: number;
+  address: string;
+  googleMapsPlaceUrl: string;
   venueConfig: VenueConfig;
   activeMatch: SportEvent;
   stands: StadiumStand[];
@@ -50,6 +55,11 @@ export const IPL_STADIUMS: IPLStadiumData[] = [
     accentColor: '#D4AF37',
     capacity: 33108,
     description: 'Iconic seaside arena at Marine Drive, home of Mumbai Indians with legendary acoustic atmosphere and close boundary dimensions.',
+    layoutImage: '/stadiums/wankhade.webp',
+    lat: 18.9389,
+    lng: 72.8258,
+    address: 'Vinoo Mankad Rd, Churchgate, Mumbai, Maharashtra 400020',
+    googleMapsPlaceUrl: 'https://maps.google.com/?q=Wankhede+Stadium+Mumbai',
     venueConfig: {
       id: 'wankhede-mumbai',
       name: 'Wankhede Stadium',
@@ -674,6 +684,11 @@ export const IPL_STADIUMS: IPLStadiumData[] = [
     accentColor: '#005CA9',
     capacity: 38200,
     description: 'The Fortress of CSK and MS Dhoni. Renowned for its passionate yellow army, oceanic breeze from Marina Beach, and modern renovated stands.',
+    layoutImage: '/stadiums/chepauk.webp',
+    lat: 13.0628,
+    lng: 80.2793,
+    address: 'Victoria Hostel Rd, Chepauk, Triplicane, Chennai, Tamil Nadu 600005',
+    googleMapsPlaceUrl: 'https://maps.google.com/?q=M.A.+Chidambaram+Stadium+Chennai',
     venueConfig: {
       id: 'chepauk-chennai',
       name: 'M. A. Chidambaram Stadium (Chepauk)',
@@ -1200,6 +1215,11 @@ export const IPL_STADIUMS: IPLStadiumData[] = [
     accentColor: '#1B9AAA',
     capacity: 132000,
     description: 'The world’s largest cricket stadium holding 132,000 spectators across 63 acres in Motera with a 360-degree LED ring.',
+    layoutImage: '/stadiums/nm_amd.webp',
+    lat: 23.0917,
+    lng: 72.5975,
+    address: 'Stadium Rd, Motera, Ahmedabad, Gujarat 380005',
+    googleMapsPlaceUrl: 'https://maps.google.com/?q=Narendra+Modi+Stadium+Ahmedabad',
     venueConfig: {
       id: 'narendra-modi-ahmedabad',
       name: 'Narendra Modi Stadium',
@@ -1724,6 +1744,11 @@ export const IPL_STADIUMS: IPLStadiumData[] = [
     accentColor: '#D4AF37',
     capacity: 68000,
     description: 'The historic Colosseum of Indian Cricket in Maidan, home of Kolkata Knight Riders known for its electrifying roar and B.C. Roy Club House.',
+    layoutImage: '/stadiums/eden.webp',
+    lat: 22.5646,
+    lng: 88.3433,
+    address: 'B.B.D. Bagh, Kolkata, West Bengal 700021',
+    googleMapsPlaceUrl: 'https://maps.google.com/?q=Eden+Gardens+Kolkata',
     venueConfig: {
       id: 'eden-gardens-kolkata',
       name: 'Eden Gardens',
@@ -2248,6 +2273,11 @@ export const IPL_STADIUMS: IPLStadiumData[] = [
     accentColor: '#D4AF37',
     capacity: 35000,
     description: 'The electric cauldron in the heart of Bengaluru. Renowned for massive sixes, short boundaries, solar canopy, and the loyal RCB 12th Man Army.',
+    layoutImage: '/stadiums/bengaluru.webp',
+    lat: 12.9788,
+    lng: 77.5996,
+    address: 'MG Road, near Cubbon Park, Bengaluru, Karnataka 560001',
+    googleMapsPlaceUrl: 'https://maps.google.com/?q=M.+Chinnaswamy+Stadium+Bengaluru',
     venueConfig: {
       id: 'chinnaswamy-bengaluru',
       name: 'M. Chinnaswamy Stadium',
@@ -2772,6 +2802,11 @@ export const IPL_STADIUMS: IPLStadiumData[] = [
     accentColor: '#EF3E42',
     capacity: 41842,
     description: 'The historic Kotla fortress in the heart of the national capital. Known for Gautam Gambhir & Bishan Singh Bedi stands, and passionate Delhi fans.',
+    layoutImage: '/stadiums/delhi.webp',
+    lat: 28.6379,
+    lng: 77.2423,
+    address: 'Bahadur Shah Zafar Marg, New Delhi, Delhi 110002',
+    googleMapsPlaceUrl: 'https://maps.google.com/?q=Arun+Jaitley+Stadium+Delhi',
     venueConfig: {
       id: 'arun-jaitley-delhi',
       name: 'Arun Jaitley Stadium',

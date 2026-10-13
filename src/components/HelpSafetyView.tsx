@@ -13,6 +13,7 @@ import {
 import { useStadium } from '../context/StadiumContext';
 import { TRANSLATIONS } from '../utils/i18n';
 import { FanReport } from '../types/stadium';
+import stadiumControlOpsImg from '../assets/images/stadium_control_ops_1791698103620.jpg';
 
 export const HelpSafetyView: React.FC = () => {
   const {
@@ -87,28 +88,47 @@ export const HelpSafetyView: React.FC = () => {
     <div className="space-y-6">
       {/* Direct Emergency & Medical Dispatch Banner (Never relies solely on AI chatbot) */}
       <div className="bg-[#111827] border border-[#EF4444]/60 rounded-2xl p-6 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="space-y-2 flex-1">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#EF4444]">
               <ShieldAlert className="w-4 h-4" />
               <span>{t.emergencyBannerTitle} (Configured by Venue Admin)</span>
             </div>
-            <h1 className="text-xl font-bold text-white font-display">
+            <h1 className="text-xl sm:text-2xl font-bold text-white font-display">
               Direct Emergency Helpline: {venueConfig.emergencyPhone}
             </h1>
             <p className="text-xs text-[#CBD5E1] max-w-3xl leading-relaxed">
               {venueConfig.medicalDispatchNote}
             </p>
+            <div className="pt-1 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => navigateToMapLocation(firstAidLocations[0]?.id || 'aid-n1', true)}
+                className="px-4 py-2.5 bg-[#EF4444] hover:bg-[#DC2626] text-white font-semibold text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer shadow-lg shadow-[#EF4444]/20"
+              >
+                <HeartPulse className="w-4 h-4" />
+                <span>Route to Nearest Paramedic Station</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              onClick={() => navigateToMapLocation(firstAidLocations[0]?.id || 'aid-n1', true)}
-              className="px-4 py-2.5 bg-[#EF4444] hover:bg-[#DC2626] text-white font-semibold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <HeartPulse className="w-4 h-4" />
-              <span>Route to Nearest First Aid</span>
-            </button>
+          {/* Arena Control Center & Paramedic Dispatch Visual Reference */}
+          <div className="w-full lg:w-72 shrink-0 bg-[#0B1120] border border-[#1E293B] rounded-xl overflow-hidden p-2.5 flex items-center gap-3">
+            <img
+              src={stadiumControlOpsImg}
+              alt="Arena Operations & Safety Control"
+              className="w-24 h-16 object-cover rounded-lg shrink-0 border border-[#1E293B]"
+            />
+            <div className="min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#EF4444] block">
+                Arena Control Post
+              </span>
+              <p className="text-xs font-semibold text-white truncate">
+                Central Operations Desk
+              </p>
+              <p className="text-[10px] text-[#94A3B8] mt-0.5">
+                On-duty stewards & medical team
+              </p>
+            </div>
           </div>
         </div>
 
