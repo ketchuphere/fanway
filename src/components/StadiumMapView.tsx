@@ -41,10 +41,8 @@ const CATEGORY_FILTERS: { id: 'all' | LocationCategory; label: string }[] = [
 
 export const StadiumMapView: React.FC = () => {
   const {
-    iplStadiums,
     activeStadiumId,
     activeStadium,
-    selectStadium,
     locations,
     queuePredictions,
     fanProfile,
@@ -263,9 +261,9 @@ export const StadiumMapView: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* 1. IPL Cricket Stadium Selector Bar */}
+      {/* 1. Active Stadium Seating Map Header */}
       <div className="bg-[#111827] border border-[#1E293B] rounded-2xl p-4 sm:p-5">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#1E293B]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#84CC16]/10 border border-[#84CC16]/30 flex items-center justify-center shrink-0">
               <Compass className="w-5 h-5 text-[#84CC16]" />
@@ -300,45 +298,6 @@ export const StadiumMapView: React.FC = () => {
               <Navigation className="w-4 h-4 text-[#84CC16]" />
               <span>Route to My Seat ({fanProfile.seat.split(' (')[0]})</span>
             </button>
-          </div>
-        </div>
-
-        {/* Stadium Switching Pills */}
-        <div className="pt-3">
-          <div className="flex items-center justify-between text-xs text-[#94A3B8] mb-2 font-medium">
-            <span>Select IPL Cricket Stadium to view official Seating Map & Navigation:</span>
-            <span className="text-[#84CC16]">{iplStadiums.length} Premier Grounds</span>
-          </div>
-
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
-            {iplStadiums.map((std) => {
-              const isActive = std.id === activeStadiumId;
-              return (
-                <button
-                  key={std.id}
-                  onClick={() => selectStadium(std.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 transition-all cursor-pointer flex items-center gap-2.5 border ${
-                    isActive
-                      ? 'bg-[#1E293B] border-[#84CC16] text-white shadow-md'
-                      : 'bg-[#0B1120] border-[#1E293B] text-[#94A3B8] hover:text-white hover:border-[#334155]'
-                  }`}
-                >
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ backgroundColor: std.franchiseThemeColor }}
-                  />
-                  <div className="text-left">
-                    <span className="block leading-none">{std.name}</span>
-                    <span className="text-[10px] text-[#64748B] block mt-0.5">
-                      {std.franchiseShort} · {std.capacity.toLocaleString()} seats
-                    </span>
-                  </div>
-                  {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#84CC16] shrink-0" />
-                  )}
-                </button>
-              );
-            })}
           </div>
         </div>
       </div>
