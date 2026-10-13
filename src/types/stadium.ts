@@ -1,4 +1,4 @@
-export type SportType = 'cricket' | 'football' | 'basketball' | 'tennis';
+export type SportType = 'cricket';
 export type UserRole = 'fan' | 'operator' | 'admin';
 export type Language = 'en' | 'hi' | 'or';
 
@@ -161,6 +161,8 @@ export interface VerifiedTicketRecord {
   barcodePayload: string;
   holderName: string;
   tier: string;
+  stadiumId?: string;
+  stadiumName?: string;
   eventId: string;
   sportLabel: string;
   eventTitle: string;
@@ -181,6 +183,7 @@ export interface FanProfile {
   transactionId?: string;
   holderName?: string;
   tier?: string;
+  stadiumId?: string;
   includedServices?: string[];
   recommendedConcourseServices?: string[];
   selectedEventId: string;

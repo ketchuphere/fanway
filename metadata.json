@@ -1,6 +1,6 @@
 {
   "name": "StadiumIQ",
-  "description": "AI-powered stadium companion and venue operations platform for live sporting events.",
+  "description": "AI-powered stadium companion for TATA IPL matches at Wankhede Stadium. Spend less time in queues, spend more time enjoying the IPL match.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

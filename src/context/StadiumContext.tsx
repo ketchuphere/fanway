@@ -26,6 +26,7 @@ import {
   INITIAL_FAN_PROFILE,
   INITIAL_TICKETS,
 } from '../data/seedData';
+import { IPL_STADIUMS, IPLStadiumData } from '../data/iplStadiumsData';
 import { predictQueueForLocation } from '../utils/queuePrediction';
 
 export type FanTab = 'home' | 'map' | 'food' | 'concierge' | 'match' | 'safety' | 'activity';
@@ -72,6 +73,11 @@ interface StadiumContextType {
   setConciergeInitialPrompt: (prompt: string | null) => void;
 
   // Core data state
+  iplStadiums: IPLStadiumData[];
+  activeStadiumId: string;
+  activeStadium: IPLStadiumData;
+  selectStadium: (stadiumId: string) => void;
+  assignSeat: (standId: string, row: string, seat: string, tier?: string) => void;
   venueConfig: VenueConfig;
   updateVenueConfig: (updates: Partial<VenueConfig>) => void;
   events: SportEvent[];
@@ -141,19 +147,64 @@ export const StadiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [fanTab, setFanTab] = useState<FanTab>('home');
   const [operatorTab, setOperatorTab] = useState<OperatorTab>('overview');
 
-  const [selectedMapLocationId, setSelectedMapLocationId] = useState<string | null>('sec-n1');
-  const [mapRouteDestinationId, setMapRouteDestinationId] = useState<string | null>(null);
+  const [activeStadiumId, setActiveStadiumId] = useState<string>('wankhede-mumbai');
+  const [selectedMapLocationId, setSelectedMapLocationId] = useState<string | null>('wankhede-stand-garware');
+  const [mapRouteDestinationId, setMapRouteDestinationId] = useState<string | null>('wankhede-stand-garware');
   const [conciergeInitialPrompt, setConciergeInitialPrompt] = useState<string | null>(null);
 
-  const [venueConfig, setVenueConfig] = useState<VenueConfig>(INITIAL_VENUE_CONFIG);
-  const [events, setEvents] = useState<SportEvent[]>(INITIAL_EVENTS);
-  const [locations, setLocations] = useState<VenueLocation[]>(INITIAL_LOCATIONS);
-  const [foodStalls, setFoodStalls] = useState<FoodStall[]>(INITIAL_FOOD_STALLS);
+  const activeStadium = useMemo(() => {
+    return IPL_STADIUMS.find((s) => s.id === activeStadiumId) || IPL_STADIUMS[0];
+  }, [activeStadiumId]);
+
+  const [venueConfig, setVenueConfig] = useState<VenueConfig>(IPL_STADIUMS[0].venueConfig);
+  const [events, setEvents] = useState<SportEvent[]>([IPL_STADIUMS[0].activeMatch]);
+  const [locations, setLocations] = useState<VenueLocation[]>(IPL_STADIUMS[0].locations);
+  const [foodStalls, setFoodStalls] = useState<FoodStall[]>(IPL_STADIUMS[0].foodStalls);
   const [queueLogs, setQueueLogs] = useState<QueueObservationLog[]>(INITIAL_QUEUE_OBSERVATIONS);
   const [fanReports, setFanReports] = useState<FanReport[]>(INITIAL_FAN_REPORTS);
   const [announcements, setAnnouncements] = useState<Announcement[]>(INITIAL_ANNOUNCEMENTS);
   const [fanProfile, setFanProfile] = useState<FanProfile>(INITIAL_FAN_PROFILE);
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
+
+  const selectStadium = (stadiumId: string) => {
+    const std = IPL_STADIUMS.find((s) => s.id === stadiumId);
+    if (!std) return;
+    setActiveStadiumId(std.id);
+    setVenueConfig(std.venueConfig);
+    setEvents([std.activeMatch]);
+    setLocations(std.locations);
+    setFoodStalls(std.foodStalls);
+
+    const firstSection = std.locations.find((l) => l.category === 'section') || std.locations[0];
+    const firstGate = std.locations.find((l) => l.category === 'gate') || std.locations[0];
+    setFanProfile((prev) => ({
+      ...prev,
+      stadiumId: std.id,
+      selectedEventId: std.activeMatch.id,
+      currentLocationId: firstSection.id,
+      section: firstSection.name.split(' (')[0],
+      gate: firstGate.name.split(' (')[0],
+    }));
+    setSelectedMapLocationId(firstSection.id);
+    setMapRouteDestinationId(firstSection.id);
+  };
+
+  const assignSeat = (standId: string, row: string, seat: string, tier?: string) => {
+    const loc = locations.find((l) => l.id === standId) || locations.find((l) => l.category === 'section');
+    if (!loc) return;
+    const standName = loc.name.split(' (')[0];
+    setFanProfile((prev) => ({
+      ...prev,
+      currentLocationId: loc.id,
+      section: standName,
+      row,
+      seat,
+      tier: tier || prev.tier,
+      hasCompletedOnboarding: true,
+    }));
+    setSelectedMapLocationId(loc.id);
+    setMapRouteDestinationId(loc.id);
+  };
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<SimulatedOrder[]>([]);
@@ -357,12 +408,25 @@ export const StadiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     if (!found) return null;
 
+    // Switch stadium if ticket belongs to a specific IPL stadium
+    if (found.stadiumId) {
+      const std = IPL_STADIUMS.find((s) => s.id === found.stadiumId);
+      if (std) {
+        setActiveStadiumId(std.id);
+        setVenueConfig(std.venueConfig);
+        setEvents([std.activeMatch]);
+        setLocations(std.locations);
+        setFoodStalls(std.foodStalls);
+      }
+    }
+
     setFanProfile({
       isAuthenticatedTicket: true,
       ticketId: found.ticketId,
       transactionId: found.transactionId,
       holderName: found.holderName,
       tier: found.tier,
+      stadiumId: found.stadiumId,
       includedServices: found.includedServices,
       recommendedConcourseServices: found.recommendedConcourseServices,
       selectedEventId: found.eventId,
@@ -377,6 +441,7 @@ export const StadiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
 
     setSelectedMapLocationId(found.sectionLocationId);
+    setMapRouteDestinationId(found.sectionLocationId);
     return found;
   };
 
@@ -538,6 +603,11 @@ export const StadiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setMapRouteDestinationId,
         conciergeInitialPrompt,
         setConciergeInitialPrompt,
+        iplStadiums: IPL_STADIUMS,
+        activeStadiumId,
+        activeStadium,
+        selectStadium,
+        assignSeat,
         venueConfig,
         updateVenueConfig,
         events,

@@ -268,9 +268,9 @@ export const TicketAuthView: React.FC = () => {
         </button>
 
         <div className="hidden md:flex items-center gap-6 text-xs text-[#94A3B8]">
-          <span>Smart Ticket & Barcode Authentication</span>
+          <span>TATA IPL Smart Ticket & Barcode Authentication</span>
           <span aria-hidden="true">·</span>
-          <span>Auto-Detects Match Fixture, Seat & Eligible Services</span>
+          <span>Auto-Detects IPL Fixture, Seat & Unlocked Services</span>
         </div>
 
         <button
@@ -288,13 +288,13 @@ export const TicketAuthView: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-[#84CC16]">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Spectator Ticket Verification</span>
+                <span>TATA IPL Ticket Verification</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
-                Sign in with your Ticket ID, Transaction ID, or Barcode
+                Sign in with your IPL Ticket ID, Transaction ID, or Barcode
               </h1>
               <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
-                When you enter your unique Ticket ID / Transaction ID or scan your ticket barcode, FanWay automatically detects which sporting event you are attending, configures your Gate & Seat wayfinding, and unlocks your eligible concourse services.
+                When you enter your unique Ticket ID / Transaction ID or scan your ticket barcode, FanWay automatically detects your IPL match fixture and stadium (Wankhede, Chepauk, Narendra Modi Stadium, Eden Gardens, M. Chinnaswamy, or Arun Jaitley Kotla), assigns your Stand & Seat on the interactive seating map, and unlocks your eligible concourse services.
               </p>
             </div>
 
@@ -482,13 +482,13 @@ export const TicketAuthView: React.FC = () => {
               </div>
             )}
 
-            {/* Quick-Select Sample Match Tickets (All 4 Sports) */}
+            {/* Quick-Select Sample Match Tickets */}
             <div className="pt-4 border-t border-[#1E293B] space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-white">
                   Sample Issued Match Tickets (Click to Scan or Auto-Fill)
                 </span>
-                <span className="text-[#94A3B8]">4 Multi-Sport Passes</span>
+                <span className="text-[#94A3B8]">Cricket Match Passes</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -512,6 +512,12 @@ export const TicketAuthView: React.FC = () => {
                       <div className="text-xs font-bold text-white truncate">
                         {tkt.eventTitle}
                       </div>
+
+                      {tkt.stadiumName && (
+                        <div className="text-[10px] text-[#38BDF8] font-medium flex items-center gap-1">
+                          <span>🏟️ {tkt.stadiumName}</span>
+                        </div>
+                      )}
 
                       <div className="text-[11px] text-[#94A3B8] flex items-center justify-between">
                         <span>
@@ -669,7 +675,7 @@ export const TicketAuthView: React.FC = () => {
                     Awaiting Ticket or Barcode Scan
                   </h2>
                   <p className="text-xs text-[#94A3B8] leading-relaxed">
-                    Start your live camera, upload a barcode image, enter a Ticket/Transaction ID, or click any of the 4 sample passes on the left to automatically configure your match and services.
+                    Start your live camera, upload a barcode photo, enter a Ticket/Transaction ID, or click any of the issued sample passes on the left to automatically configure your IPL stadium, seating map, and services.
                   </p>
                 </div>
               </div>

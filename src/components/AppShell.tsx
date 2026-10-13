@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { useStadium, FanTab, OperatorTab } from '../context/StadiumContext';
 import { TRANSLATIONS, LANGUAGE_LABELS } from '../utils/i18n';
-import { Language, UserRole, SportType } from '../types/stadium';
+import { Language, UserRole } from '../types/stadium';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
@@ -40,6 +40,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     events,
     activeEvent,
     selectEvent,
+    activeStadium,
+    venueConfig,
     fanProfile,
     updateFanProfile,
     setShowSetupModal,
@@ -90,12 +92,6 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     { id: 'settings', label: t.opSettings, icon: <Settings className="w-4 h-4" /> },
   ];
 
-  const sportLabelMap: Record<SportType, string> = {
-    cricket: 'Cricket T20',
-    football: 'Football',
-    basketball: 'Basketball',
-    tennis: 'Tennis',
-  };
 
   return (
     <div className="min-h-screen bg-[#0B1120] text-[#F8FAFC] flex flex-col pb-20 lg:pb-8">
@@ -212,21 +208,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
           {/* Right: Sport Fixture Switcher, Seat Configurator, Accessible Toggle, Language Selector */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Active Sport Event Selector */}
-            <div className="flex items-center gap-1 bg-[#0B1120] border border-[#1E293B] rounded-lg p-1">
-              {events.map((evt) => (
-                <button
-                  key={evt.id}
-                  onClick={() => selectEvent(evt.id)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                    activeEvent.id === evt.id
-                      ? 'bg-[#1E293B] text-[#84CC16] font-semibold'
-                      : 'text-[#94A3B8] hover:text-white'
-                  }`}
-                >
-                  {sportLabelMap[evt.sport]}
-                </button>
-              ))}
+            {/* Active IPL Stadium & Match Fixture Indicator */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0B1120] border border-[#1E293B] rounded-lg text-xs font-medium text-[#CBD5E1]">
+              <span className="w-2 h-2 rounded-full bg-[#84CC16] animate-pulse shrink-0" />
+              <span className="text-[#84CC16] font-semibold">{activeStadium?.shortName || 'IPL'}:</span>
+              <span className="truncate max-w-[180px] sm:max-w-none">{activeEvent.title}</span>
             </div>
 
             {/* Fan Ticket Login / Barcode Scan Trigger */}

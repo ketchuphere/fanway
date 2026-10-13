@@ -20,6 +20,7 @@ export const LandingPageView: React.FC = () => {
     setFanTab,
     setOperatorTab,
     events,
+    activeEvent,
     selectEvent,
     venueConfig,
   } = useStadium();
@@ -100,7 +101,7 @@ export const LandingPageView: React.FC = () => {
             </h1>
 
             <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed max-w-xl">
-              FanWay is a smart stadium companion connecting spectators and venue operations. Scan your ticket or barcode to instantly locate your seat, check concourse queues, get turn-by-turn directions, and order refreshments with AI assistance.
+              FanWay is the intelligent match-day companion for the Indian Premier League (IPL). Scan your ticket or barcode to instantly explore authentic seating maps across all premier IPL stadiums (Wankhede, Chepauk, Narendra Modi Stadium, Eden Gardens, M. Chinnaswamy, and Arun Jaitley Kotla), assign your seat, monitor concourse queues, and navigate with AI assistance.
             </p>
 
             {/* Main Action Buttons */}
@@ -110,7 +111,7 @@ export const LandingPageView: React.FC = () => {
                 className="px-5 py-3 bg-[#84CC16] hover:bg-[#A3E635] text-[#0B1120] font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#84CC16]/10"
               >
                 <ScanBarcode className="w-4 h-4" />
-                <span>Ticket Login / Barcode Scan</span>
+                <span>IPL Ticket Login / Barcode Scan</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -129,21 +130,19 @@ export const LandingPageView: React.FC = () => {
               </button>
             </div>
 
-            {/* Quick Sport Switcher */}
+            {/* Quick IPL Match Indicator */}
             <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-[#64748B]">
-              <span>Sample Events:</span>
-              {events.map((ev) => (
-                <button
-                  key={ev.id}
-                  onClick={() => {
-                    selectEvent(ev.id);
-                    launchFanApp('home');
-                  }}
-                  className="px-2.5 py-1 bg-[#0B1120] hover:bg-[#1E293B] text-[#CBD5E1] hover:text-[#84CC16] border border-[#1E293B] rounded-lg transition-colors cursor-pointer capitalize"
-                >
-                  {ev.sport}
-                </button>
-              ))}
+              <span>IPL Fixture:</span>
+              <button
+                onClick={() => {
+                  if (events[0]) selectEvent(events[0].id);
+                  launchFanApp('home');
+                }}
+                className="px-3 py-1 bg-[#0B1120] hover:bg-[#1E293B] text-[#84CC16] border border-[#1E293B] rounded-lg transition-colors cursor-pointer font-medium flex items-center gap-1.5"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#84CC16]" />
+                <span>TATA IPL · {activeEvent?.title || 'Chennai Super Kings vs Mumbai Indians'}</span>
+              </button>
             </div>
           </div>
 
@@ -158,10 +157,10 @@ export const LandingPageView: React.FC = () => {
             <div className="absolute bottom-4 left-4 right-4 p-3 bg-[#111827]/90 backdrop-blur-md rounded-xl border border-[#1E293B] text-xs">
               <div className="flex items-center justify-between text-[#84CC16] font-semibold">
                 <span>{venueConfig.name}</span>
-                <span className="font-mono text-[11px]">42,500 Seats</span>
+                <span className="font-mono text-[11px]">{venueConfig.capacity.toLocaleString()} Seats</span>
               </div>
               <p className="text-[#94A3B8] text-[11px] mt-0.5">
-                Simulated live match data with 15 map nodes, 4 food stalls & AI Concierge.
+                TATA IPL Match 38 (CSK vs MI) concourse data with Garware, Gavaskar & Tendulkar stands.
               </p>
             </div>
           </div>
@@ -171,7 +170,7 @@ export const LandingPageView: React.FC = () => {
         <section id="features" className="space-y-6 pt-6 border-t border-[#1E293B]">
           <div className="space-y-1">
             <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-              Prototype Highlights
+              Platform Highlights
             </h2>
             <p className="text-xs sm:text-sm text-[#94A3B8]">
               Explore the primary modules implemented in this release.

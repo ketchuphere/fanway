@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import { X, Ticket, Accessibility, Check } from 'lucide-react';
+import { X, Ticket, Accessibility, Check, Building2 } from 'lucide-react';
 import { useStadium } from '../context/StadiumContext';
 
 export const SeatSetupModal: React.FC = () => {
   const {
     showSetupModal,
     setShowSetupModal,
-    events,
+    iplStadiums,
+    activeStadiumId,
+    activeStadium,
+    selectStadium,
     fanProfile,
     updateFanProfile,
     locations,
+    setSelectedMapLocationId,
+    setMapRouteDestinationId,
   } = useStadium();
 
-  const [selectedEventId, setSelectedEventId] = useState(fanProfile.selectedEventId);
+  const [selectedStadiumId, setSelectedStadiumId] = useState(activeStadiumId);
   const [gate, setGate] = useState(fanProfile.gate);
   const [sectionLocId, setSectionLocId] = useState(fanProfile.currentLocationId);
   const [row, setRow] = useState(fanProfile.row);
@@ -23,6 +28,12 @@ export const SeatSetupModal: React.FC = () => {
   if (!showSetupModal) return null;
 
   const sectionLocations = locations.filter((l) => l.category === 'section');
+  const gateLocations = locations.filter((l) => l.category === 'gate');
+
+  const handleStadiumChange = (newStadiumId: string) => {
+    setSelectedStadiumId(newStadiumId);
+    selectStadium(newStadiumId);
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,16 +41,19 @@ export const SeatSetupModal: React.FC = () => {
     const sectionLabel = chosenSec ? chosenSec.name.split(' (')[0] : fanProfile.section;
 
     updateFanProfile({
-      selectedEventId,
+      stadiumId: selectedStadiumId,
       currentLocationId: sectionLocId,
       gate,
       section: sectionLabel,
-      row,
-      seat,
+      row: row.startsWith('Row') ? row : `Row ${row}`,
+      seat: seat.startsWith('Seat') ? seat : `Seat ${seat}`,
       preferAccessibleRoutes: preferAccessible,
       dietaryPreference: dietary,
       hasCompletedOnboarding: true,
     });
+
+    setSelectedMapLocationId(sectionLocId);
+    setMapRouteDestinationId(sectionLocId);
     setShowSetupModal(false);
   };
 
@@ -49,9 +63,12 @@ export const SeatSetupModal: React.FC = () => {
         <div className="flex items-center justify-between pb-4 border-b border-[#1E293B]">
           <div className="flex items-center gap-2.5">
             <Ticket className="w-5 h-5 text-[#84CC16]" />
-            <h2 className="text-lg font-bold text-white font-display">
-              Match-Day Ticket & Seat Setup
-            </h2>
+            <div>
+              <h2 className="text-lg font-bold text-white font-display">
+                Match-Day Stadium & Seat Setup
+              </h2>
+              <p className="text-xs text-[#94A3B8]">TATA IPL Cricket Venues</p>
+            </div>
           </div>
           <button
             onClick={() => setShowSetupModal(false)}
@@ -63,22 +80,31 @@ export const SeatSetupModal: React.FC = () => {
         </div>
 
         <form onSubmit={handleSave} className="mt-5 space-y-4">
-          {/* Event Selection */}
+          {/* IPL Cricket Stadium Selection */}
           <div>
-            <label className="block text-xs font-medium text-[#94A3B8] mb-1.5">
-              Select Demo Sporting Event (Metro Sports Arena)
+            <label className="block text-xs font-medium text-[#94A3B8] mb-1.5 flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-[#84CC16]" />
+              <span>IPL Cricket Stadium</span>
             </label>
             <select
-              value={selectedEventId}
-              onChange={(e) => setSelectedEventId(e.target.value)}
-              className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-[#84CC16] focus:outline-none"
+              value={selectedStadiumId}
+              onChange={(e) => handleStadiumChange(e.target.value)}
+              className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-xs text-white focus:border-[#84CC16] focus:outline-none"
             >
-              {events.map((ev) => (
-                <option key={ev.id} value={ev.id}>
-                  [{ev.sport.toUpperCase()}] {ev.title} — {ev.startTime}
+              {iplStadiums.map((std) => (
+                <option key={std.id} value={std.id}>
+                  {std.name} ({std.city}) — {std.franchiseShort} Home
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Active Match Fixture Badge */}
+          <div className="bg-[#0B1120] border border-[#1E293B] rounded-xl p-3 text-xs flex items-center justify-between">
+            <span className="text-[#94A3B8]">Scheduled Match:</span>
+            <span className="font-bold text-[#84CC16] truncate max-w-[240px]">
+              {activeStadium.activeMatch.title}
+            </span>
           </div>
 
           {/* Entry Gate & Seating Section */}
@@ -90,22 +116,24 @@ export const SeatSetupModal: React.FC = () => {
               <select
                 value={gate}
                 onChange={(e) => setGate(e.target.value)}
-                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-[#84CC16] focus:outline-none"
+                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-xs text-white focus:border-[#84CC16] focus:outline-none"
               >
-                <option value="Gate A">Gate A (North Main)</option>
-                <option value="Gate B">Gate B (East Metro Link)</option>
-                <option value="Gate C">Gate C (South Pavilion)</option>
+                {gateLocations.map((g) => (
+                  <option key={g.id} value={g.name.split(' (')[0]}>
+                    {g.name}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-medium text-[#94A3B8] mb-1.5">
-                Seating Section (Starting Point)
+                Seating Section / Stand
               </label>
               <select
                 value={sectionLocId}
                 onChange={(e) => setSectionLocId(e.target.value)}
-                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-[#84CC16] focus:outline-none"
+                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-xs text-white focus:border-[#84CC16] focus:outline-none"
               >
                 {sectionLocations.map((sec) => (
                   <option key={sec.id} value={sec.id}>
@@ -127,7 +155,7 @@ export const SeatSetupModal: React.FC = () => {
                 value={row}
                 onChange={(e) => setRow(e.target.value)}
                 placeholder="e.g. Row E"
-                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#84CC16] focus:outline-none"
+                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#84CC16] focus:outline-none"
               />
             </div>
             <div>
@@ -139,7 +167,7 @@ export const SeatSetupModal: React.FC = () => {
                 value={seat}
                 onChange={(e) => setSeat(e.target.value)}
                 placeholder="e.g. Seat 12"
-                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#84CC16] focus:outline-none"
+                className="w-full bg-[#0B1120] border border-[#1E293B] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#84CC16] focus:outline-none"
               />
             </div>
           </div>
@@ -148,7 +176,7 @@ export const SeatSetupModal: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
               <label className="block text-xs font-medium text-[#94A3B8] mb-1.5">
-                Food Preference
+                Concourse Food
               </label>
               <div className="grid grid-cols-2 gap-1 p-1 bg-[#0B1120] border border-[#1E293B] rounded-xl">
                 {(['All', 'Veg Only'] as const).map((opt) => (
@@ -183,7 +211,7 @@ export const SeatSetupModal: React.FC = () => {
               >
                 <span className="flex items-center gap-1.5">
                   <Accessibility className="w-4 h-4" />
-                  <span>Step-Free / Elevator</span>
+                  <span>Step-Free Elevator</span>
                 </span>
                 {preferAccessible && <Check className="w-4 h-4" />}
               </button>
@@ -202,7 +230,7 @@ export const SeatSetupModal: React.FC = () => {
               type="submit"
               className="px-5 py-2.5 text-xs font-semibold bg-[#84CC16] hover:bg-[#A3E635] text-[#0B1120] rounded-xl transition-colors cursor-pointer"
             >
-              Save Match-Day Preferences
+              Save & Apply to Map
             </button>
           </div>
         </form>
