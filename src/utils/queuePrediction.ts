@@ -1,10 +1,10 @@
-import {
+import type {
   VenueLocation,
   SportEvent,
   QueuePredictionResult,
   QueueStatus,
   RouteResult,
-} from '../types/stadium';
+} from '../types/stadium.ts';
 
 /**
  * Transparent, configurable queue estimation engine.

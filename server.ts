@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI, FunctionDeclaration, Type } from '@google/genai';
 import { predictQueueForLocation, calculateVenueRoute } from './src/utils/queuePrediction.ts';
-import {
+import type {
   VenueLocation,
   FoodStall,
   SportEvent,
