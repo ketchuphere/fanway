@@ -99,6 +99,23 @@ npm run build
 npm start
 ```
 
+### ⚡ Deploying to Vercel
+
+This project is pre-configured for seamless 1-click deployment on [Vercel](https://vercel.com):
+
+1. **Push your repository** to GitHub, GitLab, or Bitbucket.
+2. **Import the repository into Vercel**:
+   - Go to [vercel.com/new](https://vercel.com/new) and select your repository.
+   - **Framework Preset**: Vite (detected automatically).
+   - **Root Directory**: `./` (default).
+   - **Build Command**: `npm run build` (configured in `vercel.json`).
+   - **Output Directory**: `dist` (configured in `vercel.json`).
+3. **Environment Variables**:
+   - In the Vercel project settings under **Environment Variables**, add:
+     - `GEMINI_API_KEY`: *(Optional)* Your Google Gemini API key if using the AI Concierge assistant.
+4. **Deploy**:
+   - Click **Deploy**. Vercel will build the frontend assets into `dist` and deploy the serverless functions in `/api` to handle backend requests.
+
 ---
 
 ## 📁 Project Structure

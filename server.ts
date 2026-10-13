@@ -532,7 +532,7 @@ function executeConciergeTool(
   }
 }
 
-app.post('/api/concierge/chat', async (req, res) => {
+app.post(['/api/concierge/chat', '/concierge/chat'], async (req, res) => {
   try {
     const { message, history = [], context } = req.body as {
       message: string;
@@ -684,4 +684,9 @@ async function startServer() {
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;
+export { app };
